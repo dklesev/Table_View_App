@@ -25,6 +25,19 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _objects = [[NSMutableArray alloc] init];
+    [_objects insertObject:@"The Beatles" atIndex:0];
+    [_objects insertObject:@"The Who" atIndex:1];
+    [_objects insertObject:@"The Kings" atIndex:2];
+    [_objects insertObject:@"The Doors" atIndex:3];
+    [_objects insertObject:@"Jimi Hendrix" atIndex:4];
+    [_objects insertObject:@"Bee Gees" atIndex:5];
+    [_objects insertObject:@"Iggy Pop" atIndex:6];
+    [_objects insertObject:@"Stevie Wonder" atIndex:7];
+    [_objects insertObject:@"BLaBelle" atIndex:8];
+    
+    
 	// Do any additional setup after loading the view, typically from a nib.
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
 
@@ -43,7 +56,8 @@
     if (!_objects) {
         _objects = [[NSMutableArray alloc] init];
     }
-    [_objects insertObject:[NSDate date] atIndex:0];
+    // Hier wird eingefügt
+    [_objects insertObject:@"Peter" atIndex:0];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
