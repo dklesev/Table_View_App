@@ -12,6 +12,8 @@
 
 @interface MasterViewController () {
     NSMutableArray *_objects;
+    UIBarButtonItem *addButton;
+    UIBarButtonItem *doneButton;
 }
 @end
 
@@ -37,18 +39,23 @@
     [_objects insertObject:@"Stevie Wonder" atIndex:7];
     [_objects insertObject:@"BLaBelle" atIndex:8];
     
-    
-	// Do any additional setup after loading the view, typically from a nib.
-    self.navigationItem.leftBarButtonItem = self.editButtonItem;
+    addButton  = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd  target:self action:@selector(insertNewObject:)];
+    doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(insertNewObject:)];
+    self.navigationItem.leftBarButtonItem = addButton;
 
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
-    self.navigationItem.rightBarButtonItem = addButton;
+    UIBarButtonItem *deleteButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(toggleEditMode)];
+    self.navigationItem.rightBarButtonItem = deleteButton;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+-(void)toggleEditMode{
+    if(self.tableView.editing) {
+        [self.navigationItem.leftBarButtonItem setEnabled:YES];
+        [self setEditing:NO animated:YES];
+    }
+    else if (self.tableView.numberOfSections!=0){
+        [self.navigationItem.leftBarButtonItem setEnabled:NO];
+        [self setEditing:YES animated:YES];
+    }
 }
 
 - (void)insertNewObject:(id)sender
@@ -56,10 +63,22 @@
     if (!_objects) {
         _objects = [[NSMutableArray alloc] init];
     }
+    
+    if(self.tableView.editing) {
+        [self.navigationItem.rightBarButtonItem setEnabled:YES];
+        self.navigationItem.leftBarButtonItem = addButton;
+        [self setEditing:NO animated:YES];
+    }
+    else if (self.tableView.numberOfSections!=0){
+        [self.navigationItem.rightBarButtonItem setEnabled:NO];
+        self.navigationItem.leftBarButtonItem = doneButton;
+        [self setEditing:YES animated:YES];
+    }
+    
     // Hier wird eingefügt
-    [_objects insertObject:@"Peter" atIndex:0];
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    //[_objects insertObject:@"Peter" atIndex:0];
+    //NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    //[self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark - Table View
@@ -96,6 +115,17 @@
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+        [_objects insertObject:@"Peter" atIndex:0];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if([self.navigationItem.rightBarButtonItem isEnabled] && ![self.navigationItem.leftBarButtonItem isEnabled]){
+        return UITableViewCellEditingStyleDelete;
+    }else{
+           return UITableViewCellEditingStyleInsert;
     }
 }
 
