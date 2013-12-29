@@ -7,14 +7,15 @@
 //
 
 #import "MasterViewController.h"
-
 #import "DetailViewController.h"
+#import "MasterModel.h"
 
 @interface MasterViewController () {
     NSMutableArray *_objects;
     UIBarButtonItem *addButton;
     UIBarButtonItem *doneButton;
 }
+@property (strong, nonatomic) MasterModel *model;
 @end
 
 @implementation MasterViewController
@@ -38,6 +39,12 @@
     [_objects insertObject:@"Iggy Pop" atIndex:6];
     [_objects insertObject:@"Stevie Wonder" atIndex:7];
     [_objects insertObject:@"BLaBelle" atIndex:8];
+    
+    if (!self.model) {
+        self.model = [[MasterModel alloc] init];
+        self.model.test = _objects[0];
+    }
+    NSLog(@"Value: %@", [self.model.test description]);
     
     addButton  = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd  target:self action:@selector(insertNewObject:)];
     doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(insertNewObject:)];
@@ -104,7 +111,6 @@
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Return NO if you do not want the specified item to be editable.
     return YES;
 }
 
@@ -114,7 +120,6 @@
         [_objects removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         [_objects insertObject:@"Peter" atIndex:0];
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -129,27 +134,12 @@
     }
 }
 
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSDate *object = _objects[indexPath.row];
+        NSObject *object = _objects[indexPath.row];
+        [segue.destinationViewController setModel:self.model];
         [[segue destinationViewController] setDetailItem:object];
     }
 }
