@@ -10,6 +10,6 @@
 
 @interface MasterModel : NSObject
 
-@property NSString* test;
+@property NSMutableArray *objects;
 
 @end

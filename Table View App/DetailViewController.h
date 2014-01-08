@@ -10,7 +10,9 @@
 
 @interface DetailViewController : UIViewController<UITextFieldDelegate>
 
-@property (strong, nonatomic) id detailItem;
+@property (strong, nonatomic) NSIndexPath* detailItem;
 
 @property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
+
+@property (strong, nonatomic) NSString* object;
 @end

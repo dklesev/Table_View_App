@@ -11,7 +11,6 @@
 #import "MasterModel.h"
 
 @interface MasterViewController () {
-    NSMutableArray *_objects;
     UIBarButtonItem *addButton;
     UIBarButtonItem *doneButton;
 }
@@ -28,23 +27,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    _objects = [[NSMutableArray alloc] init];
-    [_objects insertObject:@"The Beatles" atIndex:0];
-    [_objects insertObject:@"The Who" atIndex:1];
-    [_objects insertObject:@"The Kings" atIndex:2];
-    [_objects insertObject:@"The Doors" atIndex:3];
-    [_objects insertObject:@"Jimi Hendrix" atIndex:4];
-    [_objects insertObject:@"Bee Gees" atIndex:5];
-    [_objects insertObject:@"Iggy Pop" atIndex:6];
-    [_objects insertObject:@"Stevie Wonder" atIndex:7];
-    [_objects insertObject:@"BLaBelle" atIndex:8];
-    
+
     if (!self.model) {
         self.model = [[MasterModel alloc] init];
-        self.model.test = _objects[0];
     }
-    NSLog(@"Value: %@", [self.model.test description]);
     
     addButton  = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd  target:self action:@selector(insertNewObject:)];
     doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(insertNewObject:)];
@@ -67,10 +53,6 @@
 
 - (void)insertNewObject:(id)sender
 {
-    if (!_objects) {
-        _objects = [[NSMutableArray alloc] init];
-    }
-    
     if(self.tableView.editing) {
         [self.navigationItem.rightBarButtonItem setEnabled:YES];
         self.navigationItem.leftBarButtonItem = addButton;
@@ -81,11 +63,6 @@
         self.navigationItem.leftBarButtonItem = doneButton;
         [self setEditing:YES animated:YES];
     }
-    
-    // Hier wird eingefügt
-    //[_objects insertObject:@"Peter" atIndex:0];
-    //NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    //[self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark - Table View
@@ -97,14 +74,14 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return _objects.count;
+    return self.model.objects.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
 
-    NSDate *object = _objects[indexPath.row];
+    NSDate *object = self.model.objects[indexPath.row];
     cell.textLabel.text = [object description];
     return cell;
 }
@@ -117,12 +94,16 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [_objects removeObjectAtIndex:indexPath.row];
+        [self.model.objects removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        [_objects insertObject:@"Peter" atIndex:0];
+        [self.model.objects insertObject:@"Peter" atIndex:0];
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        
+        [self performSegueWithIdentifier:@"showDetail" sender:nil];
+        //[self performSegueWithIdentifier:@"showDetail" sender:(UITableViewCell *)[(UITableView *)self.tableView cellForRowAtIndexPath:0]];
+        //[self performSegueWithIdentifier:@"showDetail" sender:[self tableView:self.tableView cellForRowAtIndexPath:indexPath]];
     }
 }
 
@@ -136,11 +117,12 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    //NSLog(@"Desc: %@",[sender description]);
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSObject *object = _objects[indexPath.row];
+        //NSObject *object = self.model.objects[indexPath.row];
         [segue.destinationViewController setModel:self.model];
-        [[segue destinationViewController] setDetailItem:object];
+        [[segue destinationViewController] setDetailItem:indexPath];
     }
 }
 

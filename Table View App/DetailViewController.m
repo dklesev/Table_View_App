@@ -21,8 +21,11 @@
 
 #pragma mark - Managing the detail item
 - (IBAction)textBoxChanged:(id)sender {
-    self.model.test = self.textBox.text;
-    NSLog(@"DetailView: %@", self.model.test);
+    //self.model.test = self.textBox.text;
+    self.model.objects[_detailItem.row] = self.textBox.text;
+    //Update UITableView in MasterViewController
+    UITableViewController *masterTableViewController = [self.navigationController.viewControllers objectAtIndex:0];
+    [masterTableViewController.tableView reloadData];
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -36,6 +39,8 @@
     if (_detailItem != newDetailItem) {
         _detailItem = newDetailItem;
         
+        self.object = self.model.objects[_detailItem.row];
+        
         // Update the view.
         [self configureView];
     }
@@ -47,7 +52,7 @@
 
     if (self.detailItem) {
         self.detailDescriptionLabel.text = @"Artist: ";//[self.detailItem description]];
-        [self.textBox setText:[self.detailItem description]];
+        [self.textBox setText:[self.object description]];
     }
 }
 
