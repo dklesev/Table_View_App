@@ -53,12 +53,18 @@
 
 - (void)insertNewObject:(id)sender
 {
+    if([self.model.objects count] == 0){
+        [self.model.objects insertObject:@"NEW" atIndex:0];
+        [self.tableView reloadData];
+        [self performSegueWithIdentifier:@"showDetail" sender:nil];
+    }
+    
     if(self.tableView.editing) {
         [self.navigationItem.rightBarButtonItem setEnabled:YES];
         self.navigationItem.leftBarButtonItem = addButton;
         [self setEditing:NO animated:YES];
     }
-    else if (self.tableView.numberOfSections!=0){
+    else{
         [self.navigationItem.rightBarButtonItem setEnabled:NO];
         self.navigationItem.leftBarButtonItem = doneButton;
         [self setEditing:YES animated:YES];
@@ -97,7 +103,7 @@
         [self.model.objects removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        [self.model.objects insertObject:@"Peter" atIndex:0];
+        [self.model.objects insertObject:@"NEW" atIndex:0];
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
         
